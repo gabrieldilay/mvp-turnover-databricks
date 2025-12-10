@@ -153,7 +153,6 @@ A tabela abaixo descreve os principais atributos utilizados após o tratamento n
 
 *Observação:* valores mínimos e máximos foram inferidos após leitura dos dados.
 
----
 
 ### 3.4 Linhagem dos Dados
 
