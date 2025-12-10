@@ -297,5 +297,73 @@ De forma resumida, o fluxo do pipeline é:
 
 Esse pipeline atende aos requisitos de ETL definidos pela instituição, ao mesmo tempo em que segue boas práticas modernas de engenharia de dados em arquitetura de dados em camadas.
 
+## 5. Análise de Qualidade dos Dados
+
+Antes da realização das análises de negócio na camada Gold, foi conduzida uma avaliação detalhada da qualidade dos dados presentes na camada Silver. O objetivo desta etapa é identificar possíveis problemas que possam afetar a interpretação dos resultados, tais como valores ausentes, duplicações, outliers ou inconsistências.
+
+---
+
+### 5.1 Verificação de valores nulos
+
+Foi realizada uma contagem de valores nulos para todas as colunas do dataset.  
+**Resultado:** Nenhuma coluna apresentou valores ausentes, o que indica boa consistência e completude dos dados.
+
+---
+
+### 5.2 Verificação de duplicados
+
+Para identificar registros repetidos, comparou-se o total de linhas com o total de linhas distintas.  
+**Resultado:** Não foram encontrados registros duplicados na base.
+
+---
+
+### 5.3 Distribuição do atributo-alvo (attrition)
+
+A variável `attrition` representa o desligamento (yes/no).  
+A análise mostrou que:
+
+- A maioria dos colaboradores não saiu da empresa.  
+- A classe “yes” está desbalanceada (aprox. 16%).  
+
+Esse desbalanceamento é comum em problemas reais de turnover e não compromete a análise descritiva, mas deve ser considerado em modelos preditivos (caso fossem aplicados).
+
+---
+
+### 5.4 Estatísticas descritivas para variáveis numéricas
+
+Foram calculados valores como média, mínimo, máximo e desvio padrão para todas as variáveis numéricas.  
+Os resultados não apresentam valores incompatíveis com a realidade esperada (ex.: idade entre 18 e 60, renda mensal entre 1.000 e 20.000).
+
+---
+
+### 5.5 Análise de outliers
+
+Foi utilizada a regra do IQR (Interquartile Range) para detectar possíveis outliers nos atributos numéricos.
+
+**Conclusão:** Alguns atributos apresentam valores mais afastados da mediana, mas estes foram mantidos pois representam condições reais de variabilidade (ex.: anos de empresa, renda, percentuais de aumento) e não configuram erros de digitação ou inconsistência.
+
+---
+
+### 5.6 Cardinalidade e consistência das variáveis categóricas
+
+Todas as colunas do tipo string foram avaliadas:
+
+- As categorias apresentaram cardinalidade adequada.  
+- Não foram encontradas incoerências como grafias diferentes ou categorias duplicadas após padronização (lower + trim).  
+
+---
+
+### 5.7 Conclusão da Qualidade dos Dados
+
+A base apresenta **alta qualidade**, com:
+
+- ausência de nulos,  
+- ausência de duplicados,  
+- consistência nas categorias,  
+- variabilidade numérica aceitável.
+
+Dessa forma, o dataset está adequado para análises descritivas e segmentações conduzidas na camada Gold.
+
+
 
 
