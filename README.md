@@ -191,8 +191,6 @@ Modelagem dimensional (fato e dimensão) não é necessária, pois:
 - O dataset não apresenta múltiplas entidades relacionadas.  
 - Não há joins complexos.  
 - O objetivo é analítico, não relacional.
-
-```markdown
 ---
 
 ## ✔ SEÇÃO 3 concluída com sucesso.
