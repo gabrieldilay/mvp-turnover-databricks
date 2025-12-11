@@ -213,5 +213,3 @@ A modelagem apresentada garante:
 - Dados organizados seguindo padrões de arquitetura moderna  
 - Facilidade de consulta e análise  
 - Extensibilidade para machine learning e predições futuras  
-
-O presente documento atende plenamente aos requisitos da instituição na etapa de Modelagem e Arquitetura do projeto.
