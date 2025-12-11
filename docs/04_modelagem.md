@@ -86,14 +86,14 @@ Abaixo está o diagrama textual:
                              |
                              | dept_id
                              |
-dim_cargo ---- cargo_id -----|
+    dim_cargo      cargo_id  |
                              |
-                             |--- fato_attrition --- salary_range_id --- dim_faixa_salarial
-dim_genero --- gender_id ----|
+                             | fato_attrition        salary_range_id      dim_faixa_salarial
+    dim_genero    gender_id  |
                              |
-                             | years_company_id ---- dim_tempo_empresa
+                             | years_company_id      dim_tempo_empresa
                              |
-                             | age_range_id -------- dim_faixa_etaria
+                             | age_range_id          dim_faixa_etaria
 
 ---
 
