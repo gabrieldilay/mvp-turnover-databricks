@@ -176,5 +176,4 @@ O MVP cumpriu seus objetivos de forma plena, entregando:
 
 Além disso, os resultados encontrados são consistentes, explicativos e permitem recomendações estratégicas para a área de Recursos Humanos.
 
-Este trabalho demonstra domínio em engenharia de dados, análise exploratória, arquitetura de dados e boas práticas de documentação, atendendo aos critérios de avaliação previstos no enunciado institucional.
 
