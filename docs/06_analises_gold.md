@@ -261,6 +261,3 @@ A camada Gold cumpre o papel de:
 - Organizar informações para visualizações e relatórios;
 - Permitir interpretação clara de padrões;
 - Sustentar recomendações estratégicas para RH.
-
-Este documento serve como referência final para interpretação dos resultados do MVP.
-
