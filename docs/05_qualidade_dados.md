@@ -226,5 +226,3 @@ Eventuais melhorias futuras podem incluir:
 - testes adicionais de robustez para outliers;
 - normalização avançada de algumas variáveis;
 - comparação com dados de períodos diferentes ou de outras unidades de negócio.
-
-Para os objetivos deste MVP, entretanto, a qualidade dos dados foi considerada suficiente e alinhada às exigências da instituição.
