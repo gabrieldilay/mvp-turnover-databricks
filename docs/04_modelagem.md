@@ -95,7 +95,6 @@ dim_genero --- gender_id ----|
                              |
                              | age_range_id -------- dim_faixa_etaria
 
-
 ---
 
 # 3. Tabelas do Modelo Dimensional
