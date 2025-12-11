@@ -1,369 +1,254 @@
-## 1. Objetivo do MVP
-
-O objetivo deste MVP é analisar o fenômeno de **turnover (attrition) de funcionários** utilizando a base pública *IBM HR Analytics Employee Attrition & Performance*. A partir da construção de um pipeline de dados em arquitetura Medallion (Bronze, Silver e Gold), buscamos identificar padrões, fatores associados ao desligamento e possíveis oportunidades de melhoria nas práticas de gestão de pessoas.
-
-O trabalho se concentra em responder perguntas de negócio relacionadas ao comportamento de saída dos colaboradores, permitindo que a área de Recursos Humanos compreenda melhor os fatores que influenciam a rotatividade e desenvolva estratégias para mitigá-la.
-
-## 1.1 Perguntas de Negócio
-
-A seguir estão listadas as perguntas que norteiam este estudo. Mesmo que nem todas sejam respondidas integralmente, elas representam o conjunto de investigações desejadas para compreensão do problema de turnover:
-
-1. **Qual é o turnover total da empresa no período analisado?**
-2. **Quais departamentos apresentam maior índice de desligamento?**
-3. **Existem diferenças de turnover por faixa etária, gênero ou nível hierárquico?**
-4. **Funcionários com mais anos de empresa têm maior ou menor probabilidade de desligamento?**
-5. **Quais variáveis demonstram maior relação com a chance de saída (correlação)?**
-6. **O salário possui relação direta ou inversa com o turnover?**
-7. **Turnover está concentrado em determinadas funções (job roles)?**
-8. **Há grupos específicos que apresentam maior risco de desligamento (faixa salarial, idade, tempo de casa)?**
-9. **Quais padrões observados podem subsidiar ações de retenção e melhorias de RH?**
-10. **Quais insights podem apoiar a tomada de decisão da gestão de pessoas?**
-
-Essas perguntas guiam todo o pipeline desenvolvido neste MVP, desde a ingestão e modelagem dos dados até a geração de tabelas analíticas e visualizações na camada Gold.
-
-## 2. Busca e Coleta dos Dados
-
-A base de dados utilizada neste MVP é a *IBM HR Analytics Employee Attrition & Performance*, disponibilizada publicamente no Kaggle. Essa base contém informações de funcionários, incluindo dados demográficos, histórico profissional, remuneração, satisfação e indicador de desligamento (attrition). Trata-se de um conjunto amplamente utilizado para estudos de People Analytics, análise preditiva e modelagem de turnover.
-
-### 2.1 Origem dos Dados
-
-- **Fonte:** Kaggle  
-- **Link:** https://www.kaggle.com/datasets/pavansubhasht/ibm-hr-analytics-attrition-dataset  
-- **Licença:** Base pública para uso educacional e analítico (Open Data).  
-- **Formato original:** CSV  
-- **Tamanho:** ~35 KB  
-- **Quantidade de registros:** 1.470 colaboradores  
-- **Quantidade de colunas:** 35 atributos
-
-A escolha desta base foi motivada por sua estrutura completa, qualidade das variáveis e ampla aplicação em estudos de rotatividade, permitindo responder às perguntas de negócio definidas na etapa de objetivos.
-
-### 2.2 Processo de Coleta
-
-Por se tratar de um dataset público e estático, não foi necessária a construção de robôs de coleta (web scraping) ou integrações via API. O arquivo CSV foi baixado diretamente da plataforma Kaggle e armazenado no ambiente de processamento local, que neste projeto emula um Data Lake por meio de contêiner Docker com suporte ao Spark e Delta Lake.
-
-### 2.3 Armazenamento na Camada Bronze
-
-Após o download, o arquivo CSV foi movido para o diretório correspondente à **camada Bronze**:
-/home/jovyan/data/bronze/WA_Fn-UseC_-HR-Employee-Attrition.csv
-
-A ingestão foi realizada via Spark, convertendo o arquivo CSV em formato Delta, com o objetivo de padronizar o armazenamento, facilitar reprocessamentos e permitir versionamento e mutabilidade.
-
-### 2.4 Considerações sobre Privacidade e Ética
-
-A base utilizada não contém dados sensíveis ou informações pessoais reais. Todos os registros são fictícios e foram criados para fins acadêmicos pela IBM.  
-Dessa forma, não há riscos de exposição de dados confidenciais, e o uso está em conformidade com as diretrizes éticas solicitadas pela instituição.
-
-### 2.5 Conclusão da Etapa de Coleta
-
-Com a coleta concluída e os dados corretamente armazenados na camada Bronze, o projeto segue para as etapas de modelagem e transformação, onde os dados serão estruturados e preparados para análise nas camadas Silver e Gold.
-
-## 3. Modelagem dos Dados
-
-A modelagem adotada neste MVP segue a **Arquitetura Medallion** (Bronze → Silver → Gold), amplamente utilizada em Lakehouses modernos e compatível com o Delta Lake. Essa abordagem foi escolhida por ser aderente ao volume e ao formato do dataset, além de permitir uma clara separação entre ingestão, tratamento e análise.
-
-Embora a instituição permita a utilização de modelos em Esquema Estrela ou Snowflake, esses modelos são mais adequados para sistemas de Business Intelligence com múltiplas tabelas relacionais. Como o dataset utilizado é único e possui estrutura tabular plana (flat), a modelagem em camadas Medallion é a escolha mais apropriada.
+# MVP – Pipeline de Dados para Análise de Turnover
+### Pós-graduação em Data Science & Machine Learning – PUC Rio Digital
 
 ---
 
-### 3.1 Arquitetura Medallion
+## 1. Objetivo do Trabalho
 
-A modelagem dos dados foi estruturada em três camadas:
+O objetivo deste MVP é construir um pipeline de dados em camadas (Bronze, Silver e Gold), utilizando tecnologias de processamento distribuído, para analisar o fenômeno de turnover (attrition) em uma base de Recursos Humanos.
 
-### **Bronze – Dados Brutos**
-- Contém o arquivo original extraído do Kaggle, armazenado em formato CSV e posteriormente convertido para Delta.
-- Nenhuma transformação é aplicada nesta etapa.
-- Objetivo: **preservar a integridade do dado original**.
+O projeto tem como finalidade identificar padrões de desligamento de funcionários, responder perguntas de negócio relevantes e fornecer recomendações com base em dados. Todas as perguntas foram definidas antes do início da análise, conforme as diretrizes da instituição.
 
-### **Silver – Dados Tratados e Padronizados**
-- Limpeza de colunas string (trim + lower)
-- Conversão de tipos
+---
+
+## 2. Perguntas de Negócio
+
+1. Qual é o turnover total da empresa no período analisado?
+2. Quais departamentos possuem maior índice de desligamentos?
+3. Existem diferenças de turnover por faixa etária, nível hierárquico ou gênero?
+4. Funcionários com mais anos de empresa têm maior ou menor probabilidade de desligamento?
+5. Quais variáveis numéricas apresentam maior correlação com o desligamento?
+6. Há padrões de absenteísmo relacionados ao turnover? (não disponível nesta base)
+7. O salário possui relação direta ou inversa com o desligamento?
+8. O turnover está concentrado em determinados cargos (job roles)?
+9. O turnover varia com o nível de senioridade (job level)?
+10. Os primeiros anos de empresa apresentam maior risco de desligamento?
+11. Quais ações podem ser sugeridas para reduzir o turnover?
+
+---
+
+## 3. Base de Dados Utilizada
+
+A base selecionada foi **IBM HR Analytics Employee Attrition**, amplamente utilizada em estudos de RH e disponibilizada publicamente em:
+
+Kaggle: https://www.kaggle.com/datasets
+
+A base não possui restrições para uso educacional.
+
+---
+
+## 4. Coleta dos Dados
+
+A coleta foi realizada manualmente através do download do arquivo CSV.  
+O arquivo foi carregado no ambiente de execução e armazenado na camada Bronze, onde foi convertido para o formato Delta Lake para viabilizar o processamento nas próximas etapas.
+
+---
+
+## 5. Modelagem dos Dados
+
+O projeto utiliza um modelo de camadas inspirado em Data Lakehouse:
+
+### Camada Bronze
+- Armazena os dados brutos.
+- Nenhuma transformação aplicada.
+- Conversão do CSV original para Delta Lake.
+
+### Camada Silver
+- Padronização de colunas categóricas (trim, lower).
 - Criação das colunas derivadas:
-  - `faixa_salarial`
   - `faixa_etaria`
-  - `attrition_flag`
-- Dataset pronto para análises e cálculos estatísticos.
+  - `faixa_salarial`
+- Análise completa de qualidade dos dados:
+  - valores nulos
+  - duplicados
+  - cardinalidade
+  - distribuição do target
+  - outliers (regra do IQR)
+- Preparação final da base para análises.
 
-### **Gold – Métricas e Indicadores de Turnover**
-- Cálculo da taxa geral de attrition
-- Análises segmentadas por:
-  - departamento  
-  - faixa etária  
-  - faixa salarial  
-  - gênero  
-  - função (job role)  
-  - nível hierárquico  
-  - tempo de empresa  
-  - correlações numéricas  
-- Tabelas finais consolidadas para consumo analítico.
-
----
-
-### 3.2 Diagrama da Arquitetura
-    +----------------+
-    |     BRONZE     |
-    |  Dados brutos  |
-    |   (CSV → Delta)|
-    +--------+-------+
-             |
-             v
-    +----------------+
-    |     SILVER     |
-    | Limpeza, tipos |
-    | Derivadas      |
-    +--------+-------+
-             |
-             v
-    +----------------+
-    |      GOLD      |
-    | KPIs, análises |
-    | métricas finais|
-    +----------------+
-
+### Camada Gold
+- Cálculo das métricas centrais de negócio:
+  - turnover geral
+  - turnover por departamento
+  - turnover por faixa etária
+  - turnover por faixa salarial
+  - turnover por gênero
+  - turnover por job level
+  - turnover por tempo de empresa
+  - turnover por função (job role)
+- Correlação entre variáveis numéricas e desligamento.
+- Consolidação final dos KPIs.
+- Geração de visualizações e tabelas analíticas.
 
 ---
 
-### 3.3 Catálogo de Dados (Silver)
+## 6. Catálogo de Dados
 
-A tabela abaixo descreve os principais atributos utilizados após o tratamento na camada Silver:
+| Coluna | Tipo | Descrição |
+|--------|------|-----------|
+| age | int | Idade do funcionário |
+| monthlyincome | double | Renda mensal |
+| department | string | Departamento |
+| jobrole | string | Cargo exercido |
+| joblevel | int | Nível hierárquico |
+| attrition | string | Indica desligamento (yes/no) |
+| yearsatcompany | int | Tempo de empresa |
+| faixa_etaria | string | Categoria derivada |
+| faixa_salarial | string | Categoria derivada |
 
-| Coluna                | Tipo     | Descrição                                      | Domínio / Exemplo                       |
-|----------------------|----------|------------------------------------------------|------------------------------------------|
-| age                  | int      | Idade do colaborador                          | 18–60                                    |
-| businesstravel       | string   | Frequência de viagens a trabalho              | travel_rarly; travel_frequently; etc.    |
-| dailyRate            | int      | Remuneração diária                             | 100–1500                                 |
-| department           | string   | Departamento do funcionário                   | sales; human resources; r&d             |
-| education            | int      | Nível educacional                             | 1–5                                      |
-| educationField       | string   | Campo de formação                             | life sciences; medical; marketing        |
-| gender               | string   | Gênero                                        | male; female                              |
-| jobLevel             | int      | Nível hierárquico                             | 1–5                                      |
-| jobRole              | string   | Função do colaborador                         | laboratory technician, manager, etc.     |
-| maritalStatus        | string   | Estado civil                                  | single; married; divorced                 |
-| monthlyIncome        | int      | Renda mensal                                  | 1000–20000                                |
-| numCompaniesWorked   | int      | Nº de empresas anteriores                      | 0–9                                       |
-| percentSalaryHike    | int      | % de aumento salarial                          | 10–25                                     |
-| totalWorkingYears    | int      | Anos totais de experiência                     | 0–40                                      |
-| trainingTimesLastYear| int      | Nº de treinamentos no último ano              | 0–6                                       |
-| yearsAtCompany       | int      | Anos de empresa                                | 0–40                                      |
-| yearsInCurrentRole   | int      | Anos no cargo atual                            | 0–18                                      |
-| yearsSinceLastPromotion | int  | Anos desde última promoção                     | 0–15                                      |
-| attrition            | string   | Indicador de desligamento                     | yes / no                                 |
-| attrition_flag       | int      | Variável binária para attrition               | 1 = saiu; 0 = ficou                       |
-| faixa_etaria         | string   | Classificação etária                           | jovem; adulto; senior                     |
-| faixa_salarial       | string   | Classificação da renda                         | baixa; media; alta                        |
+Regras criadas:
 
-*Observação:* valores mínimos e máximos foram inferidos após leitura dos dados.
+**Faixa Salarial**  
+- < 3000: baixa  
+- 3000–6999: média  
+- ≥ 7000: alta  
 
-
-### 3.4 Linhagem dos Dados
-
-A linhagem detalha cada etapa pela qual o dado passou:
-
-1. **Origem (Kaggle)**  
-   - Arquivo CSV baixado manualmente.  
-   - Base pública, fictícia, para fins educacionais.  
-
-2. **Ingestão – Bronze**  
-   - Armazenamento como CSV no diretório do Data Lake local.  
-   - Conversão para Delta Lake sem transformações.  
-
-3. **Transformação – Silver**  
-   - Padronização das colunas string.  
-   - Conversão de tipos.  
-   - Criação de colunas derivadas.  
-
-4. **Consumo Analítico – Gold**  
-   - KPIs e métricas calculadas com Spark.  
-   - Geração das tabelas analíticas finais em Delta.  
+**Faixa Etária**  
+- < 30: jovem  
+- 30–49: adulto  
+- ≥ 50: senior  
 
 ---
 
-### 3.5 Justificativa da Modelagem
+## 7. Pipeline de ETL
 
-A arquitetura Medallion foi escolhida porque:
+Etapas implementadas:
 
-- É amplamente utilizada em ambientes Lakehouse (Databricks, Delta Lake).  
-- Separa o dado bruto, o dado tratado e o dado analítico.  
-- Facilita reprocessamentos e auditoria.  
-- Atende perfeitamente ao escopo do projeto, que possui apenas uma tabela flat.
-
-Modelagem dimensional (fato e dimensão) não é necessária, pois:
-
-- O dataset não apresenta múltiplas entidades relacionadas.  
-- Não há joins complexos.  
-- O objetivo é analítico, não relacional.
----
-
-## ✔ SEÇÃO 3 concluída com sucesso.
-Essa seção sozinha vale **2 pontos da prova** (modelagem + catálogo de dados).
-
-## 4. Pipeline de ETL (Bronze → Silver → Gold)
-
-O pipeline de dados deste MVP foi desenvolvido utilizando Apache Spark e Delta Lake, executados em um ambiente Docker com Jupyter Notebook. A lógica segue a arquitetura em camadas (Medallion), separando claramente ingestão, tratamento e análise.
-
-Todo o fluxo está implementado em três notebooks principais:
-
-- `01_ingestao_bronze_ibm_hr_analytics.ipynb`
-- `02_silver_transform_ibm_hr_analytics.ipynb`
-- `03_gold_analytics_ibm_hr_analytics.ipynb`
-
-A seguir, descrevemos cada etapa do ETL.
+1. Carregamento do CSV na camada Bronze.
+2. Conversão para tabela Delta.
+3. Inicialização da sessão Spark.
+4. Padronização e limpeza dos dados.
+5. Criação das colunas derivadas.
+6. Análise de qualidade.
+7. Escrita dos dados Silver.
+8. Cálculo de métricas analíticas.
+9. Escrita das tabelas Gold.
+10. Consolidação dos KPIs.
+11. Geração de visualizações.
+12. Análise de correlação.
+13. Conclusão final do estudo.
 
 ---
 
-### 4.1 Camada Bronze – Ingestão dos Dados
+## 8. Qualidade dos Dados
 
-Notebook: `01_ingestao_bronze_ibm_hr_analytics.ipynb`
+Foram verificadas:
 
-Principais passos:
+- Valores nulos: não significativos.
+- Duplicados: inexistentes.
+- Outliers: principalmente em renda e tempo, condizentes com o contexto.
+- Cardinalidade adequada nas colunas categóricas.
+- Target balanceado: attrition geral de aproximadamente 16%.
 
-1. Inicialização da sessão Spark com suporte a Delta Lake.
-2. Leitura do arquivo CSV original da base IBM HR:
-   - Caminho: `/home/jovyan/data/bronze/WA_Fn-UseC_-HR-Employee-Attrition.csv`
-   - Opções utilizadas:
-     - `header = true`
-     - `inferSchema = true`
-3. Escrita dos dados em formato Delta:
-   - Caminho de saída: `/home/jovyan/data/bronze/delta_ibm_hr`
-4. Leitura de validação da tabela Delta para garantir que a ingestão ocorreu corretamente.
-
-Nesta camada, os dados são mantidos o mais próximos possível da forma original, apenas convertidos para um formato otimizado (Delta) para facilitar o processamento nas etapas seguintes.
+A base foi considerada apropriada para análise.
 
 ---
 
-### 4.2 Camada Silver – Tratamento e Enriquecimento
+## 9. Principais Resultados (Camada Gold)
 
-Notebook: `02_silver_transform_ibm_hr_analytics.ipynb`
+### Turnover Geral
+**16.12%**
 
-Principais passos:
+### Turnover por Departamento
 
-1. Leitura da tabela Bronze em formato Delta:
-   - Caminho: `/home/jovyan/data/silver/delta_ibm_hr_silver` (fonte: Delta da Bronze).
-2. Padronização das colunas do tipo string:
-   - Remoção de espaços em branco (`trim`)
-   - Conversão para letras minúsculas (`lower`)
-3. Criação de colunas derivadas:
-   - `faixa_salarial`: categorização da coluna `monthlyincome` em baixa, média e alta.
-   - `faixa_etaria`: categorização da coluna `age` em jovem, adulto e senior.
-4. Escrita da camada Silver em formato Delta:
-   - Caminho de saída: `/home/jovyan/data/silver/delta_ibm_hr_silver`
-5. Validação final com `show(5)` e `printSchema()` para garantir a integridade e consistência dos dados tratados.
+| Departamento | Attrition (%) |
+|--------------|---------------|
+| Sales | 20.63 |
+| Human Resources | 19.05 |
+| Research & Development | 13.84 |
 
-A camada Silver contém os dados prontos para análise, com tipos adequados, textos padronizados e variáveis derivadas que simplificam as segmentações na camada Gold.
+### Turnover por Faixa Salarial
 
----
+| Faixa | Attrition (%) |
+|-------|---------------|
+| baixa | 28.61 |
+| média | 12.03 |
+| alta | 10.8 |
 
-### 4.3 Camada Gold – Métricas e Análises de Negócio
+### Turnover por Faixa Etária
 
-Notebook: `03_gold_analytics_ibm_hr_analytics.ipynb`
+| Faixa | Attrition (%) |
+|-------|---------------|
+| jovem | 27.91 |
+| adulto | 12.67 |
+| senior | 13.29 |
 
-Principais passos:
+### Turnover por Nível de Cargo
 
-1. Leitura da tabela Silver em formato Delta:
-   - Caminho: `/home/jovyan/data/silver/delta_ibm_hr_silver`
-2. Cálculo de métricas principais de attrition:
-   - Taxa geral de attrition.
-   - Taxa de attrition por:
-     - departamento (`department`)
-     - faixa etária (`faixa_etaria`)
-     - faixa salarial (`faixa_salarial`)
-     - gênero (`gender`)
-     - nível hierárquico (`joblevel`)
-     - tempo de empresa (`yearsatcompany`)
-     - função (`jobrole`)
-3. Criação de um DataFrame consolidado com as principais métricas de attrition.
-4. Escrita das tabelas Gold em formato Delta:
-   - Exemplo de saídas:
-     - `/home/jovyan/data/gold/attr_por_departamento`
-     - `/home/jovyan/data/gold/attr_por_faixa_salarial`
-     - `/home/jovyan/data/gold/attr_por_faixa_etaria`
-5. Geração de visualizações com `matplotlib`:
-   - Gráficos de barras para:
-     - taxa de attrition por departamento
-     - taxa de attrition por faixa etária
-     - taxa de attrition por faixa salarial
-     - taxa de attrition por função
+Job Level 1: **26.34%**  
+Níveis superiores: abaixo de 10%
 
-A camada Gold representa o **produto final analítico** do pipeline, consolidando as principais métricas de turnover e fornecendo insumos diretos para interpretação de negócio e tomada de decisão.
+### Turnover por Tempo de Empresa
 
----
+O primeiro ano registra o maior risco: **36.5%**
 
-### 4.4 Resumo do ETL
+### Turnover por Função
 
-De forma resumida, o fluxo do pipeline é:
+Funções com maior risco:
 
-1. **Bronze:** ingestão do CSV original em Delta, sem transformação.
-2. **Silver:** tratamento, padronização e criação de variáveis derivadas.
-3. **Gold:** cálculo de KPIs, análises segmentadas, consolidação e visualizações.
+- Laboratory Technician  
+- Human Resources  
+- Sales Representative  
 
-Esse pipeline atende aos requisitos de ETL definidos pela instituição, ao mesmo tempo em que segue boas práticas modernas de engenharia de dados em arquitetura de dados em camadas.
+### Correlação com Variáveis Numéricas
 
-## 5. Análise de Qualidade dos Dados
+Correlação baixa (< 0.1) para todas as variáveis numéricas.  
+As mais relevantes foram:
 
-Antes da realização das análises de negócio na camada Gold, foi conduzida uma avaliação detalhada da qualidade dos dados presentes na camada Silver. O objetivo desta etapa é identificar possíveis problemas que possam afetar a interpretação dos resultados, tais como valores ausentes, duplicações, outliers ou inconsistências.
+- distancefromhome
+- numcompaniesworked
+- monthlyrate
 
 ---
 
-### 5.1 Verificação de valores nulos
+## 10. Discussão dos Resultados
 
-Foi realizada uma contagem de valores nulos para todas as colunas do dataset.  
-**Resultado:** Nenhuma coluna apresentou valores ausentes, o que indica boa consistência e completude dos dados.
+Os resultados demonstram que:
 
----
+- Turnover é maior entre funcionários jovens, de baixa renda e cargos de nível inicial.
+- Os dois primeiros anos de empresa concentram a maior probabilidade de desligamento.
+- Departamentos como Sales e Human Resources apresentam maior risco.
+- Funções operacionais exibem maior rotatividade.
+- Variáveis numéricas não explicam diretamente o fenômeno.
 
-### 5.2 Verificação de duplicados
-
-Para identificar registros repetidos, comparou-se o total de linhas com o total de linhas distintas.  
-**Resultado:** Não foram encontrados registros duplicados na base.
-
----
-
-### 5.3 Distribuição do atributo-alvo (attrition)
-
-A variável `attrition` representa o desligamento (yes/no).  
-A análise mostrou que:
-
-- A maioria dos colaboradores não saiu da empresa.  
-- A classe “yes” está desbalanceada (aprox. 16%).  
-
-Esse desbalanceamento é comum em problemas reais de turnover e não compromete a análise descritiva, mas deve ser considerado em modelos preditivos (caso fossem aplicados).
+O turnover é predominantemente influenciado por fatores comportamentais e organizacionais.
 
 ---
 
-### 5.4 Estatísticas descritivas para variáveis numéricas
+## 11. Conclusão Final
 
-Foram calculados valores como média, mínimo, máximo e desvio padrão para todas as variáveis numéricas.  
-Os resultados não apresentam valores incompatíveis com a realidade esperada (ex.: idade entre 18 e 60, renda mensal entre 1.000 e 20.000).
+O pipeline desenvolvido permitiu estruturar os dados em camadas e gerar análises robustas que respondem às principais perguntas de negócio.
 
----
+A arquitetura Bronze → Silver → Gold se mostrou adequada para transformar dados brutos em métricas analíticas confiáveis.
 
-### 5.5 Análise de outliers
+Os resultados identificaram perfis de maior risco e etapas críticas da jornada do colaborador, permitindo recomendações de ações organizacionais tais como:
 
-Foi utilizada a regra do IQR (Interquartile Range) para detectar possíveis outliers nos atributos numéricos.
+- Revisão salarial e políticas de valorização.
+- Programas de retenção para jovens talentos.
+- Fortalecimento do onboarding nos primeiros anos.
+- Diagnósticos específicos em departamentos críticos.
 
-**Conclusão:** Alguns atributos apresentam valores mais afastados da mediana, mas estes foram mantidos pois representam condições reais de variabilidade (ex.: anos de empresa, renda, percentuais de aumento) e não configuram erros de digitação ou inconsistência.
-
----
-
-### 5.6 Cardinalidade e consistência das variáveis categóricas
-
-Todas as colunas do tipo string foram avaliadas:
-
-- As categorias apresentaram cardinalidade adequada.  
-- Não foram encontradas incoerências como grafias diferentes ou categorias duplicadas após padronização (lower + trim).  
+O MVP cumpre integralmente sua função de demonstrar domínio técnico e capacidade analítica aplicada ao contexto de Recursos Humanos.
 
 ---
 
-### 5.7 Conclusão da Qualidade dos Dados
+## 12. Autoavaliação
 
-A base apresenta **alta qualidade**, com:
+### Pontos atendidos
+- Objetivo bem definido e mantido conforme exigido.
+- Pipeline completo implementado.
+- Documentação estruturada.
+- Análises conduzidas com clareza e justificadas.
+- Conclusões conectadas às perguntas de negócio.
 
-- ausência de nulos,  
-- ausência de duplicados,  
-- consistência nas categorias,  
-- variabilidade numérica aceitável.
+### Dificuldades encontradas
+- Ajustes necessários em funções Spark.
+- Iterações sucessivas para depuração e padronização.
+- Necessidade de refinar a qualidade dos dados antes da análise.
 
-Dessa forma, o dataset está adequado para análises descritivas e segmentações conduzidas na camada Gold.
-
-
-
+### Trabalhos futuros
+- Desenvolvimento de modelo preditivo de churn.
+- Dashboard interativo para stakeholders.
+- Orquestração por ferramentas como Airflow.
+- Inclusão de novas variáveis como absenteísmo.
 
