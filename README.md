@@ -223,12 +223,12 @@ Recomendações:
 ```bash
 git clone https://github.com/gabrieldilay/mvp-turnover-databricks.git
 cd mvp-turnover-databricks
-
 Executar notebooks nesta ordem:
 notebooks/00_setup_spark_delta.ipynb
 notebooks/01_ingestao_bronze_ibm_hr_analytics.ipynb
 notebooks/02_silver_transform_ibm_hr_analytics.ipynb
 notebooks/03_gold_analytics_ibm_hr_analytics.ipynb
+
 
 ## Documentação Completa
 
@@ -248,4 +248,4 @@ notebooks/03_gold_analytics_ibm_hr_analytics.ipynb
 ## Licença
 
 Este projeto é destinado exclusivamente para fins acadêmicos na PUC Rio Digital.
-
+---
