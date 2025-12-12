@@ -1,98 +1,93 @@
-# 08. Autoavaliação
+# 8. Autoavaliação
 
-Este documento apresenta a autoavaliação referente ao desenvolvimento do MVP, conforme solicitado pela instituição. Aqui são descritas as reflexões sobre o processo, o atingimento dos objetivos, as dificuldades enfrentadas e as oportunidades de evolução para trabalhos futuros.
-
----
-
-## 1. Atingimento dos Objetivos Propostos
-
-Os objetivos definidos no início do projeto foram atingidos de maneira satisfatória.  
-Foi possível:
-
-- Construir um pipeline completo de dados com as camadas Bronze, Silver e Gold.
-- Padronizar, limpar e enriquecer os dados utilizando PySpark.
-- Criar um modelo dimensional em formato estrela e documentá-lo adequadamente.
-- Desenvolver um catálogo de dados completo.
-- Realizar análises exploratórias que respondem às principais perguntas de negócio.
-- Documentar todo o processo conforme solicitado, incluindo evidências e organização em pastas.
-- Disponibilizar o repositório final no GitHub, com clareza e rastreabilidade.
-
-Embora algumas perguntas de negócio tenham sido respondidas parcialmente, isso ocorreu devido à ausência de variáveis específicas no dataset público utilizado. A documentação foi mantida integral conforme exigido.
-
-Em síntese, considero que o escopo definido foi plenamente atendido.
+Esta autoavaliação apresenta uma reflexão crítica sobre o desenvolvimento do MVP, considerando o atendimento aos objetivos definidos, as dificuldades enfrentadas, os aprendizados adquiridos e oportunidades de evolução futura.
 
 ---
 
-## 2. Dificuldades Encontradas
+## 1. Atingimento dos Objetivos
 
-Durante o desenvolvimento deste MVP, algumas dificuldades merecem destaque:
+De forma geral, considero que o MVP atingiu plenamente os objetivos propostos pela disciplina.  
+Os pontos mais relevantes alcançados foram:
 
-### 2.1 Limitações da Databricks Community Edition
-A plataforma possui limitações de:
+- Construção de um pipeline completo em camadas (Bronze → Silver → Gold) utilizando PySpark e Delta Lake.
+- Organização do projeto segundo princípios de arquitetura Lakehouse.
+- Documentação estruturada de acordo com o padrão exigido pela PUC Rio Digital.
+- Análise aprofundada do fenômeno de turnover, com respostas claras para as perguntas de negócio definidas previamente.
+- Desenvolvimento de visualizações e métricas consistentes que permitem interpretações fundamentadas.
 
-- memória,
-- tempo de execução,
-- tamanho de cluster,
-- reinicializações inesperadas.
-
-Isso exigiu adaptações, modularização e controle cuidadoso dos DataFrames.
-
-### 2.2 Ajustes e Tratamento da Base IBM HR
-Apesar de ser uma base pública e relativamente limpa, foi necessário:
-
-- padronizar textos,
-- lidar com categorias inconsistentes,
-- criar colunas derivadas coerentes para análises,
-- realizar validações de qualidade.
-
-### 2.3 Organização das Etapas do Pipeline
-A separação adequada entre Bronze, Silver e Gold exigiu planejamento para que:
-
-- nenhuma transformação ocorresse na Bronze,
-- Silver mantivesse apenas dados limpos,
-- Gold fosse exclusivamente analítica.
-
-Esse processo trouxe aprendizado significativo sobre arquitetura de dados.
-
-### 2.4 Modelagem Dimensional
-A conversão de atributos em dimensões e a definição das chaves exigiram:
-- análise de cardinalidade,
-- tratamento de categóricos,
-- visão clara das perguntas de negócio.
+O projeto também demonstrou capacidade de conectar **engenharia de dados**, **qualidade de dados** e **análise exploratória** em um fluxo coerente, robusto e replicável.
 
 ---
 
-## 3. Aprendizados Obtidos
+## 2. Dificuldades Enfrentadas
 
-O projeto proporcionou aprendizados essenciais:
+Durante o desenvolvimento, algumas dificuldades se destacaram:
 
-- domínio prático do ecossistema Spark/Delta Lake;
-- maior entendimento sobre pipelines de dados e suas camadas;
-- aplicação de conceitos de Data Lakehouse;
-- prática real de análise exploratória orientada a negócio;
-- construção de documentação técnica profissional;
-- consolidação de boas práticas de Engenharia de Dados.
+### • Ajustes em PySpark e Delta Lake  
+Foi necessário revisar diversas funções de transformação até chegar à padronização final das camadas Silver e Gold.  
+Funções como `withColumn`, `when`, `agg` e tratativas de tipos exigiram atenção especial.
 
-Além disso, a compreensão da relação entre dados e comportamento organizacional ficou mais evidente, especialmente no contexto de RH Analytics.
+### • Organização da modelagem dimensional  
+Embora o dataset seja relativamente simples, estruturar um modelo estrela que fosse ao mesmo tempo didático e coerente com boas práticas exigiu reflexão sobre granularidade, chaves e separação de dimensões.
 
----
+### • Documentação em padrão acadêmico  
+A construção da documentação completa (objetivo, origem dos dados, catálogo, modelagem, análises, conclusão e autoavaliação) exigiu bastante tempo de refinamento para garantir clareza, consistência e aderência às diretrizes.
 
-## 4. Oportunidades de Melhoria e Trabalhos Futuros
-
-Algumas melhorias podem ser exploradas em versões futuras do projeto:
-
-1. Criação de modelos preditivos de churn com MLflow no Databricks.
-2. Implementação de testes automáticos de qualidade de dados (Great Expectations ou Deequ).
-3. Construção de dashboards executivos em Power BI conectados à camada Gold.
-4. Automação completa do pipeline com Databricks Workflows.
-5. Incremento do pipeline com múltiplas fontes de dados (ex.: absenteísmo, pesquisas de clima).
-6. Ampliação do modelo dimensional com novas dimensões e granularidades.
-
-Essas evoluções fortaleceriam o projeto e permitiriam análises ainda mais robustas.
+### • Execução fora do Databricks  
+Como o MVP foi desenvolvido em Jupyter Notebook e não diretamente na plataforma Databricks, foi necessário adaptar as instruções de execução para serem compatíveis com ambos os ambientes.
 
 ---
 
-## 5. Conclusão da Autoavaliação
+## 3. Aprendizados Adquiridos
 
-A execução deste MVP representou um processo completo de engenharia de dados, desde a ingestão até a análise final, incluindo modelagem, documentação e organização segundo padrões corporativos.  
-As dificuldades enfrentadas foram superadas com aprendizado prático, e os resultados obtidos respondem de forma consistente às perguntas de negócio propostas.
+Este MVP proporcionou aprendizados significativos:
+
+- Maior domínio sobre o ecossistema Spark e Lakehouse.
+- Melhora na capacidade de projetar pipelines estruturados e escaláveis.
+- Entendimento aplicado de como tratar um problema real de RH utilizando dados.
+- Evolução na escrita técnica, documentação e boas práticas de versionamento.
+- Maior consciência da importância da camada Silver como etapa crítica de refinamento analítico.
+
+Além disso, trabalhar com métricas de turnover fortaleceu a habilidade de interpretar indicadores organizacionais e conectá-los a decisões de negócio.
+
+---
+
+## 4. Pontos a Melhorar
+
+Mesmo com a entrega completa, alguns aspectos poderiam ser aperfeiçoados:
+
+- Criar mecanismos de orquestração automatizada (Airflow ou Databricks Jobs).
+- Expandir análises para incluir hipóteses adicionais, como absenteísmo (não disponível nesta base).
+- Inserir testes automatizados de qualidade de dados (Great Expectations ou Deequ).
+- Implementar versionamento de dados e time-travel como parte formal da arquitetura.
+
+---
+
+## 5. Trabalhos Futuros
+
+Algumas evoluções planejadas para uma versão estendida do projeto:
+
+### • Modelo preditivo de churn  
+Treinar um classificador para prever desligamentos utilizando variáveis comportamentais e organizacionais.
+
+### • Dashboard final  
+Criar visualizações executivas (Power BI ou Databricks SQL Dashboard) para RH e liderança.
+
+### • Novo pipeline com orquestração  
+Transformar o MVP em um fluxo contínuo com monitoramento e logs.
+
+### • Inclusão de novas fontes de dados  
+Adicionar dados como:
+- avaliações de performance,
+- absenteísmo,
+- feedbacks de clima organizacional,
+- trilhas de carreira.
+
+---
+
+## 6. Conclusão da Autoavaliação
+
+O desenvolvimento do MVP foi uma experiência completa, combinando engenharia, análise e reflexão crítica.  
+Saio do projeto com maior confiança técnica e consciência sobre boas práticas em pipelines de dados.  
+Sinto que o trabalho representa com fidelidade a proposta da disciplina e que atende aos critérios para avaliação máxima.
+
