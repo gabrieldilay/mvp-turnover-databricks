@@ -1,5 +1,5 @@
 # MVP – Pipeline de Dados para Análise de Turnover  
-### Pós-graduação em Data Science & Machine Learning – PUC Rio Digital
+### Pós-graduação em Data Science & Analytics – PUC Rio Digital
 ### Aluno: Gabriel Dilay de Oliveira
 ### Matrícula: 4052025001828
 
