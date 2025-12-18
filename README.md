@@ -1,5 +1,7 @@
 # MVP – Pipeline de Dados para Análise de Turnover  
 ### Pós-graduação em Data Science & Machine Learning – PUC Rio Digital
+### Aluno: Gabriel Dilay de Oliveira
+### Matrícula: 4052025001828
 
 ---
 
@@ -8,7 +10,7 @@
 2. [Perguntas de Negócio](#perguntas-de-negócio)  
 3. [Base de Dados Utilizada](#base-de-dados-utilizada)  
 4. [Coleta dos Dados](#coleta-dos-dados)  
-5. [Modelagem das Camadas (Bronze, Silver, Gold)](#modelagem-das-camadas-bronze-silver-gold)  
+5. [Modelagem das Camadas (Bronze, Silver e Gold)](#modelagem-das-camadas-bronze-silver-e-gold)  
 6. [Catálogo de Dados](#catálogo-de-dados)  
 7. [Pipeline de ETL](#pipeline-de-etl)  
 8. [Qualidade dos Dados](#qualidade-dos-dados)  
@@ -24,79 +26,80 @@
 
 ## Objetivo do Trabalho
 
-O objetivo deste MVP é construir um pipeline de dados em camadas (Bronze, Silver e Gold), utilizando processamento distribuído com Spark e Delta Lake, para analisar fatores associados ao turnover (attrition) em uma base de Recursos Humanos.  
-O estudo visa responder perguntas de negócio definidas previamente, conforme exigido pela instituição.
+O objetivo deste MVP é construir um pipeline de dados em camadas (Bronze, Silver e Gold), utilizando processamento distribuído com Apache Spark e Delta Lake, para analisar os fatores associados ao turnover (attrition) em uma base de dados de Recursos Humanos.
+
+O estudo tem como foco responder perguntas de negócio definidas previamente, conforme as diretrizes da PUC Rio Digital, demonstrando domínio técnico, capacidade analítica e organização metodológica ao longo de todo o pipeline.
 
 ---
 
 ## Perguntas de Negócio
 
-1. Qual é o turnover total da empresa?  
-2. Quais departamentos possuem maior rotatividade?  
+1. Qual é a taxa geral de turnover da empresa?  
+2. Quais departamentos apresentam maior rotatividade?  
 3. Há diferenças de attrition por faixa etária, gênero e nível hierárquico?  
-4. Funcionários com mais anos de empresa saem menos?  
-5. Quais variáveis numéricas têm maior correlação com o desligamento?  
-6. Há relação entre salário e attrition?  
+4. Funcionários com mais anos de empresa apresentam menor probabilidade de desligamento?  
+5. Quais variáveis numéricas apresentam maior correlação com o desligamento?  
+6. Existe relação entre faixa salarial e attrition?  
 7. O turnover varia entre cargos (job roles)?  
-8. Os primeiros anos de empresa possuem maior risco de saída?  
-9. É possível identificar perfis críticos de risco?  
+8. Os primeiros anos de empresa concentram maior risco de saída?  
+9. É possível identificar perfis críticos de risco de desligamento?  
 
 ---
 
 ## Base de Dados Utilizada
 
-Dataset: **IBM HR Analytics Employee Attrition & Performance**  
-Origem: Kaggle  
-Licença: Livre para uso educacional
+- **Dataset:** IBM HR Analytics Employee Attrition & Performance  
+- **Origem:** Kaggle  
+- **Licença:** Livre para uso educacional  
 
 ---
 
 ## Coleta dos Dados
 
-A coleta foi realizada via download manual do arquivo CSV.  
-Em seguida, o arquivo foi carregado na camada Bronze e convertido para Delta Lake.
+A coleta foi realizada por meio do download manual do arquivo CSV disponibilizado publicamente.  
+Em seguida, o dataset foi carregado na camada Bronze e convertido para o formato Delta Lake, viabilizando o processamento distribuído e as etapas subsequentes do pipeline.
 
 ---
 
-## Modelagem das Camadas (Bronze, Silver, Gold)
+## Modelagem das Camadas (Bronze, Silver e Gold)
 
-### Bronze
-- Dados brutos
-- Sem transformações
-- Conversão CSV → Delta
+### Camada Bronze
+- Armazena os dados brutos.
+- Nenhuma transformação aplicada.
+- Conversão do CSV original para Delta Lake.
 
-### Silver
-- Padronizações: `trim`, `lower`
-- Criação das variáveis derivadas:
+### Camada Silver
+- Padronização de colunas categóricas (`trim`, `lower`).
+- Criação de variáveis derivadas:
   - `faixa_etaria`
   - `faixa_salarial`
-- Análise de qualidade:
-  - nulos
+- Análise de qualidade de dados:
+  - valores nulos
   - duplicados
   - cardinalidade
-  - outliers (IQR)
-  - distribuição do target
+  - outliers (regra do IQR)
+  - distribuição da variável target (attrition)
 
-### Gold
-- Cálculo das métricas analíticas:
+### Camada Gold
+- Cálculo das métricas analíticas de negócio:
   - turnover geral
-  - turnover por segmento (departamento, gênero, job level, idade, renda, tempo de empresa)
-  - correlação com variáveis numéricas
-- Consolidação de KPIs
-- Geração das visualizações
+  - turnover por departamento, gênero, nível hierárquico, faixa etária, faixa salarial e tempo de empresa
+  - análise de correlação com variáveis numéricas
+- Consolidação de KPIs.
+- Geração de tabelas analíticas e visualizações.
 
 ---
 
 ## Catálogo de Dados
 
 | Coluna | Tipo | Descrição |
-|--------|------|-----------|
-| age | int | Idade |
+|------|------|-----------|
+| age | int | Idade do colaborador |
 | monthlyincome | double | Renda mensal |
 | department | string | Departamento |
 | jobrole | string | Cargo |
 | joblevel | int | Nível hierárquico |
-| attrition | string | Desligamento (yes/no) |
+| attrition | string | Indica desligamento (yes/no) |
 | yearsatcompany | int | Tempo de empresa |
 | faixa_etaria | string | Faixa etária derivada |
 | faixa_salarial | string | Faixa salarial derivada |
@@ -105,27 +108,29 @@ Em seguida, o arquivo foi carregado na camada Bronze e convertido para Delta Lak
 
 ## Pipeline de ETL
 
-1. Carregar CSV bruto → Bronze  
-2. Criar tabela Delta  
-3. Inicializar Spark + Delta  
-4. Aplicar padronizações e limpeza  
-5. Criar colunas derivadas  
-6. Realizar análise de qualidade  
-7. Salvar Silver  
-8. Calcular métricas de negócio  
-9. Salvar Gold  
-10. Consolidar KPIs  
-11. Gerar análises e gráficos  
+1. Carregamento do CSV bruto na camada Bronze  
+2. Conversão para tabela Delta  
+3. Inicialização do Spark com suporte a Delta Lake  
+4. Padronização e limpeza dos dados  
+5. Criação de colunas derivadas  
+6. Análise de qualidade dos dados  
+7. Escrita da camada Silver  
+8. Cálculo das métricas de negócio  
+9. Escrita da camada Gold  
+10. Consolidação dos KPIs  
+11. Geração de análises e visualizações  
 
 ---
 
 ## Qualidade dos Dados
 
-- **Nulos:** inexistentes ou irrelevantes  
-- **Duplicados:** nenhum duplicado encontrado  
-- **Outliers:** presentes em renda e tempo, compatíveis com contexto  
-- **Cardinalidade:** adequada  
-- **Balanceamento:** 16% attrition geral  
+- **Valores nulos:** inexistentes ou irrelevantes  
+- **Duplicados:** nenhum duplicado identificado  
+- **Outliers:** presentes em renda e tempo de empresa, compatíveis com o contexto de RH  
+- **Cardinalidade:** adequada para análise  
+- **Distribuição do target:** aproximadamente 16% de attrition  
+
+A base foi considerada apropriada para as análises propostas.
 
 ---
 
@@ -135,6 +140,7 @@ Em seguida, o arquivo foi carregado na camada Bronze e convertido para Delta Lak
 **16.12%**
 
 ### Turnover por Departamento
+
 | Departamento | Attrition (%) |
 |-------------|----------------|
 | Sales | 20.63 |
@@ -156,63 +162,49 @@ Em seguida, o arquivo foi carregado na camada Bronze e convertido para Delta Lak
 - Níveis superiores: abaixo de 10%
 
 ### Turnover por Tempo de Empresa
-- 1º ano: **36.5%**  
-- Redução gradual após 3 anos
+- Primeiro ano: **36.5%**  
+- Redução progressiva após os três primeiros anos
 
 ### Turnover por Função
-Top 3:
+Funções com maior risco:
 - Laboratory Technician  
 - Human Resources  
 - Sales Representative  
 
 ### Correlação
-Variáveis numéricas apresentam correlação fraca (< 0.1) — indicando influência maior de fatores comportamentais e organizacionais.
+As variáveis numéricas apresentaram correlação fraca (< 0.1), indicando maior influência de fatores comportamentais e organizacionais.
 
 ---
 
 ## Discussão dos Resultados
 
-Os achados mostram que turnover é mais elevado em:
-- funcionários jovens,  
-- com baixa renda,  
-- nos primeiros anos de empresa,  
-- em departamentos e funções operacionais,  
-- em níveis de entrada.
+Os resultados indicam maior turnover entre:
+- colaboradores jovens,
+- profissionais de baixa renda,
+- funcionários em início de carreira,
+- cargos e departamentos operacionais,
+- níveis hierárquicos iniciais.
 
-As análises indicam a necessidade de políticas de retenção com foco em remuneração, onboarding e valorização dos talentos em início de carreira.
+Esses achados reforçam a importância de políticas de retenção focadas em remuneração, onboarding estruturado e desenvolvimento de carreira nos primeiros anos.
 
 ---
 
 ## Conclusão Final
 
-O pipeline Bronze → Silver → Gold permitiu transformar dados brutos em inteligência analítica real.  
-O MVP atingiu seu objetivo ao identificar padrões claros de desligamento e fornecer evidências acionáveis.
+O pipeline Bronze → Silver → Gold demonstrou ser eficaz na transformação de dados brutos em inteligência analítica acionável.  
+O MVP atingiu plenamente seus objetivos ao identificar padrões claros de turnover e fornecer evidências relevantes para apoio à tomada de decisão.
 
-Recomendações:
-- ajustar políticas salariais para faixas de maior risco  
-- reforçar onboarding  
-- atuar preventivamente em cargos operacionais  
-- direcionar ações específicas para departamentos críticos  
+Entre as principais recomendações estão:
+- revisão de políticas salariais,
+- fortalecimento do onboarding,
+- ações específicas em cargos e departamentos críticos,
+- estratégias de retenção voltadas a profissionais em início de carreira.
 
 ---
 
 ## Autoavaliação
 
-### Pontos fortes
-- Pipeline completo e funcional  
-- Documentação detalhada  
-- Análise robusta e conectada às perguntas de negócio  
-- Estrutura profissional do repositório  
-
-### Dificuldades
-- Ajustes em funções PySpark  
-- Necessidade de padronizações adicionais na Silver  
-
-### Melhorias futuras
-- Criar modelo preditivo de churn  
-- Desenvolver dashboard interativo  
-- Orquestrar pipeline com Airflow  
-- Incorporar novas variáveis  
+A autoavaliação completa do projeto está documentada em arquivo específico, conforme exigido pela disciplina.
 
 ---
 
